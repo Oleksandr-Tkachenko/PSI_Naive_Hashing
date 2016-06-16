@@ -22,6 +22,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h> 
+#include <libexplain/connect.h>
 
 #include "psi_misc.h"
 #include "psi_structures.h"

@@ -3,8 +3,8 @@
 void psi_naive_hashing_run(PSI_NAIVE_HASHING_CTX* ctx) {
     psi_naive_hashing_show_settings(ctx);
     psi_naive_hashing_alloc_memory(ctx);
-    psi_naive_hashing_free_memory(ctx);
     psi_naive_hashing_handle_io(ctx);
+    psi_naive_hashing_free_memory(ctx);
 }
 
 static void psi_naive_hashing_show_settings(PSI_NAIVE_HASHING_CTX* ctx) {
@@ -29,23 +29,13 @@ static void psi_naive_hashing_show_settings(PSI_NAIVE_HASHING_CTX* ctx) {
 }
 
 static void psi_naive_hashing_alloc_memory(PSI_NAIVE_HASHING_CTX* ctx) {
-    ctx->r_buf = (uint8_t**) malloc(sizeof (*ctx->r_buf) * 2);
-    ctx->w_buf = (uint8_t**) malloc(sizeof (*ctx->w_buf) * 2);
-    for (size_t i = 0; i < 2; i++) {
-
-        ctx->r_buf[i] = malloc(sizeof (*ctx->r_buf[i]) * ctx->read_buffer_size
-                * ctx->elem_size);
-        ctx->w_buf[i] = malloc(sizeof (*ctx->w_buf[i]) * ctx->write_buffer_size
-                * ctx->hash_size);
-    }
+    ctx->r_buf = malloc(sizeof (*ctx->r_buf) * ctx->read_buffer_size
+            * ctx->elem_size);
+    ctx->w_buf = malloc(sizeof (*ctx->w_buf) * ctx->write_buffer_size
+            * ctx->hash_size);
 }
 
 static void psi_naive_hashing_free_memory(PSI_NAIVE_HASHING_CTX* ctx) {
-    for (size_t i = 0; i < 2; i++) {
-
-        free(ctx->r_buf[i]);
-        free(ctx->w_buf[i]);
-    }
     free(ctx->r_buf);
     free(ctx->w_buf);
 }
@@ -70,47 +60,38 @@ static void psi_naive_hashing_handle_as_server(PSI_NAIVE_HASHING_CTX* ctx) {
 
     bzero((char *) &client_addr, sizeof (client_addr));
     client_addr.sin_family = AF_INET;
-    client_addr.sin_addr.s_addr = htonl(ctx->ip);
+    //client_addr.sin_addr.s_addr = htonl(ctx->ip);
+    client_addr.sin_addr.s_addr = INADDR_ANY;
     client_addr.sin_port = htons((unsigned short) ctx->port);
     if (bind(sock, (struct sockaddr *) &client_addr,
             sizeof (client_addr)) < 0) {
         perror("ERROR on binding");
         exit(EXIT_FAILURE);
     }
-    if (listen(sock, 10) < 0) {
+    if (listen(sock, 100) < 0) {
         perror("ERROR on listen");
         exit(EXIT_FAILURE);
     }
     clientlen = sizeof (client_addr);
-#pragma omp parallel num_threads(ctx->threads) shared(ctx, sock, clientlen, client_addr, size_accepted, size_read, tmp_read) 
-    {
-#pragma omp single
-        {
-            size_t sleep_counter = 0;
-            while (1) {
-                if (size_accepted = accept(sock, (struct sockaddr *) &client_addr,
-                        &clientlen) < 0) {
-                    perror("ERROR on accept");
-                    exit(EXIT_FAILURE);
-                }
-                size_read = read(size_accepted, ctx->w_buf[ctx->actual_array % 2],
-                        ctx->write_buffer_size * ctx->hash_size);
-
-                if (size_read < 0) {
-                    perror("ERROR reading from socket");
-                    break;
-                } else if (size_read == 1)
-                    break;
-                while (ctx->writing_flag);
-                ctx->actual_array++;
-                tmp_read = size_read;
-#pragma omp task
-                {
-
-                    psi_naive_hashing_write_to_file(ctx, tmp_read);
-                }
-            }
+    uint8_t back[1] = {1};
+    while (1) {
+        int client_socket = accept(sock, (struct sockaddr *) &client_addr,
+                &clientlen);
+        if (client_socket < 0) {
+            perror("ERROR on accept");
+            exit(EXIT_FAILURE);
         }
+        int size_accepted = 0;
+        while (1) {
+            size_accepted = recv(client_socket, ctx->w_buf, ctx->write_buffer_size * ctx->hash_size, 0);
+            //printf("Received packet of size : %d\n", size_accepted);
+            if (size_accepted > 1)
+                psi_naive_hashing_write_to_file(ctx, size_accepted);
+            else
+                break;
+        }
+        if (size_accepted == 1)
+            break;
     }
 
     close(sock);
@@ -121,6 +102,8 @@ static void psi_naive_hashing_handle_as_server(PSI_NAIVE_HASHING_CTX* ctx) {
 static void psi_naive_hashing_handle_as_client(PSI_NAIVE_HASHING_CTX* ctx) {
     int sock, size_sent, size_read;
     struct sockaddr_in server_addr;
+    struct hostent *server;
+
     gboolean sending = FALSE;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
@@ -130,78 +113,60 @@ static void psi_naive_hashing_handle_as_client(PSI_NAIVE_HASHING_CTX* ctx) {
             (const void *) &optval, sizeof (int));
     bzero((char *) &server_addr, sizeof (server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = htonl(ctx->ip);
+    server_addr.sin_addr.s_addr = inet_addr(ctx->ip_str);
     server_addr.sin_port = htons((unsigned short) ctx->port);
-    if (bind(sock, (struct sockaddr *) &server_addr,
+    /*if (bind(sock, (struct sockaddr *) &server_addr,
             sizeof (server_addr)) < 0) {
         perror("ERROR on binding");
         exit(EXIT_FAILURE);
-    }
-    int sleep_counter = 0;
-    while (connect(sock, (struct sockaddr *) &server_addr,
-            sizeof (server_addr) < 0)) {
-        if (sleep_counter == 0) {
-            sleep_counter++;
-            printf("Waiting for connection\n");
-        }
-        sleep(1);
+    }*/
+    int sleep_counter = 0, error;
+    if (error = connect(sock, (struct sockaddr *) &server_addr, sizeof (server_addr)) < 0) {
+        printf("Error opening connection\n");
+        exit(EXIT_FAILURE);
     }
     printf("Connection established\n");
-#pragma omp parallel num_threads(ctx->threads) shared(ctx, sock, size_sent,size_read, server_addr, sending) 
-    {
-#pragma omp single
-        {
-            uint8_t zero[1] = {0};
-            while (1) {
-                size_read = fread(ctx->r_buf[ctx->actual_array % 2],
-                        ctx->elem_size, ctx->write_buffer_size, ctx->f_source);
-                if (size_read == 0) {
-                    write(sock, zero, 1);
-                    break;
-                }
-                psi_naive_hashing_hash_elems(ctx, size_read);
-                while (ctx->writing_flag);
-                size_sent = size_read;
-                ctx->actual_array++;
-#pragma omp task
-                {
-                    psi_naive_hashing_send(ctx, size_sent, &sock);
-                }
-            }
+    gboolean waiting = FALSE;
+    uint8_t zero[1] = {0};
+    while (1) {
+        size_read = fread(ctx->r_buf,
+                ctx->elem_size, ctx->write_buffer_size, ctx->f_source);
+        //printf("Size read : %d\n", size_read);
+        if (size_read == 0) {
+            //close(sock);
+            //connect(sock, (struct sockaddr *) &server_addr, sizeof (server_addr));
+            sleep(1);
+            write(sock, zero, 1);
+            break;
         }
+        psi_naive_hashing_hash_elems(ctx, size_read);
+        psi_naive_hashing_send(ctx, size_read, &sock);
     }
     close(sock);
 }
 
 static void psi_naive_hashing_write_to_file(PSI_NAIVE_HASHING_CTX* ctx, int read) {
-
-    while (ctx->writing_flag);
-    ctx->writing_flag = TRUE;
-    fwrite((ctx->w_buf[(ctx->actual_array + 1) % 2]), read, 1, ctx->f_dest_b);
-    ctx->writing_flag = FALSE;
+    int written = 0;
+    if (written = fwrite((ctx->w_buf), 1, read, ctx->f_dest_b) < read)
+        printf("Failed to write received information to the file\n %d / %d\n", written, read);
 }
 
 static void psi_naive_hashing_send(PSI_NAIVE_HASHING_CTX* ctx, int n, int * sock) {
-
-    ctx->writing_flag = TRUE;
-    write(*sock, ctx->w_buf[(ctx->actual_array + 1) % 2], 19 * n);
-    ctx->writing_flag = FALSE;
+    write(*sock, ctx->w_buf, n * ctx->hash_size);
 }
 
 static void psi_naive_hashing_hash_elems(PSI_NAIVE_HASHING_CTX* ctx, int n) {
 #pragma omp parallel for num_threads(ctx->threads) shared(ctx, n)
-
     for (size_t i = 0; i < n; i++)
-        get_sha256(ctx->r_buf[ctx->actual_array % 2] + i * ctx->elem_size,
-            ctx->w_buf[ctx->actual_array % 2] + i * ctx->hash_size);
+        get_sha256(ctx->r_buf + i * ctx->elem_size,
+            ctx->w_buf + i * ctx->hash_size);
 }
 
 static void psi_naive_hashing_hash_server_elems(PSI_NAIVE_HASHING_CTX* ctx) {
     int size_read;
-    ctx->actual_array = 0;
-    while (size_read = fread(ctx->r_buf[0], ctx->elem_size, ctx->elem_size,
+    while (size_read = fread(ctx->r_buf, ctx->elem_size, ctx->elem_size,
             ctx->f_source)) {
         psi_naive_hashing_hash_elems(ctx, size_read);
-        fwrite(ctx->w_buf[0], ctx->hash_size, size_read, ctx->f_dest_me);
+        fwrite(ctx->w_buf, ctx->hash_size, size_read, ctx->f_dest_me);
     }
 }

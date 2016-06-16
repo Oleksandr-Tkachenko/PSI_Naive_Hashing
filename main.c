@@ -33,7 +33,6 @@ int main(int argc, char** argv) {
     parse_argv(argc, argv, ctx);
     self_check(ctx);
     ctx->hash_size = SHA256_DIGEST_LENGTH;
-    ctx->actual_array = 0;
     ctx->write_buffer_size = ctx->read_buffer_size;
     psi_naive_hashing_run(ctx);
     return (EXIT_SUCCESS);
@@ -78,6 +77,7 @@ int parse_argv(int argc, char** argv, PSI_NAIVE_HASHING_CTX* ctx) {
                 ctx->port = atoi(optarg);
                 break;
             case 'i':
+                strncpy(ctx->ip_str, optarg, 16);
                 parse_ip(&ctx->ip, (char*) optarg);
                 break;
             case 'c':
@@ -107,11 +107,11 @@ int parse_argv(int argc, char** argv, PSI_NAIVE_HASHING_CTX* ctx) {
             default:
                 abort();
         }
-
     for (index = optind; index < argc; index++)
         printf("Non-option argument %s\n", argv[index]);
-
-    ctx->writing_flag = FALSE;
+        
+        if(ctx->role == SERVER)
+            ctx->read_buffer_size++;
 }
 
 void self_check(PSI_NAIVE_HASHING_CTX * ctx) {
