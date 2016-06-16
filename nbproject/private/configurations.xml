@@ -13,8 +13,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -26,18 +24,18 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 4 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 1000 -e 16 -t 4 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/100000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 1000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 1000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/B/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 100 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 100 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/10000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 100 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/10000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/1000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/10000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/1000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/1000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 8 -p 7775 -i 130.83.33.104</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/10000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 1 -p 7775 -i 130.83.33.104</runcommand>
+        <runcommand>"${OUTPUT_PATH}"  --server -s "/home/alex/Work/server/A/1000000" -d "/home/alex/Work/server/res_a" -b "/home/alex/Work/server/res_b"  -r 10000 -e 16 -t 8 -p 7775 -i 130.83.33.104</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

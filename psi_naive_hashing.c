@@ -60,7 +60,6 @@ static void psi_naive_hashing_handle_as_server(PSI_NAIVE_HASHING_CTX* ctx) {
 
     bzero((char *) &client_addr, sizeof (client_addr));
     client_addr.sin_family = AF_INET;
-    //client_addr.sin_addr.s_addr = htonl(ctx->ip);
     client_addr.sin_addr.s_addr = INADDR_ANY;
     client_addr.sin_port = htons((unsigned short) ctx->port);
     if (bind(sock, (struct sockaddr *) &client_addr,
@@ -104,7 +103,6 @@ static void psi_naive_hashing_handle_as_client(PSI_NAIVE_HASHING_CTX* ctx) {
     struct sockaddr_in server_addr;
     struct hostent *server;
 
-    gboolean sending = FALSE;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
         perror("ERROR opening socket");
@@ -115,26 +113,17 @@ static void psi_naive_hashing_handle_as_client(PSI_NAIVE_HASHING_CTX* ctx) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(ctx->ip_str);
     server_addr.sin_port = htons((unsigned short) ctx->port);
-    /*if (bind(sock, (struct sockaddr *) &server_addr,
-            sizeof (server_addr)) < 0) {
-        perror("ERROR on binding");
-        exit(EXIT_FAILURE);
-    }*/
-    int sleep_counter = 0, error;
+    int error;
     if (error = connect(sock, (struct sockaddr *) &server_addr, sizeof (server_addr)) < 0) {
         printf("Error opening connection\n");
         exit(EXIT_FAILURE);
     }
     printf("Connection established\n");
-    gboolean waiting = FALSE;
     uint8_t zero[1] = {0};
     while (1) {
         size_read = fread(ctx->r_buf,
                 ctx->elem_size, ctx->write_buffer_size, ctx->f_source);
-        //printf("Size read : %d\n", size_read);
         if (size_read == 0) {
-            //close(sock);
-            //connect(sock, (struct sockaddr *) &server_addr, sizeof (server_addr));
             sleep(1);
             write(sock, zero, 1);
             break;
@@ -164,7 +153,7 @@ static void psi_naive_hashing_hash_elems(PSI_NAIVE_HASHING_CTX* ctx, int n) {
 
 static void psi_naive_hashing_hash_server_elems(PSI_NAIVE_HASHING_CTX* ctx) {
     int size_read;
-    while (size_read = fread(ctx->r_buf, ctx->elem_size, ctx->elem_size,
+    while (size_read = fread(ctx->r_buf, ctx->elem_size, ctx->read_buffer_size,
             ctx->f_source)) {
         psi_naive_hashing_hash_elems(ctx, size_read);
         fwrite(ctx->w_buf, ctx->hash_size, size_read, ctx->f_dest_me);

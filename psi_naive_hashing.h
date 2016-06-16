@@ -29,8 +29,6 @@
 #include "psi_structures.h"
 #include "psi_hashing.h"
 
-#define SLEEP_NOTIF_THRESHOLD 10
-
 #ifdef __cplusplus
 extern "C" {
 #endif
