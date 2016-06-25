@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     PSI_NAIVE_HASHING_CTX ctx[1];
     parse_argv(argc, argv, ctx);
     self_check(ctx);
-    ctx->hash_size = SHA256_DIGEST_LENGTH;
+    ctx->hash_size = SHA256_DIGEST_LENGTH/2;
     ctx->write_buffer_size = ctx->read_buffer_size;
     psi_naive_hashing_run(ctx);
     return (EXIT_SUCCESS);

@@ -147,7 +147,7 @@ static void psi_naive_hashing_send(PSI_NAIVE_HASHING_CTX* ctx, int n, int * sock
 static void psi_naive_hashing_hash_elems(PSI_NAIVE_HASHING_CTX* ctx, int n) {
 #pragma omp parallel for num_threads(ctx->threads) shared(ctx, n)
     for (size_t i = 0; i < n; i++)
-        get_sha256(ctx->r_buf + i * ctx->elem_size,
+        get_16_bit_sha256(ctx->r_buf + i * ctx->elem_size,
             ctx->w_buf + i * ctx->hash_size);
 }
 
