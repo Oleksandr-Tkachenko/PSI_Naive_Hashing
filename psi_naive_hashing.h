@@ -22,8 +22,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <arpa/inet.h> 
-#include <libexplain/connect.h>
+#include <arpa/inet.h>
 
 #include "psi_misc.h"
 #include "psi_structures.h"
@@ -34,16 +33,6 @@ extern "C" {
 #endif
 
     void psi_naive_hashing_run(PSI_NAIVE_HASHING_CTX * ctx);
-    static void psi_naive_hashing_show_settings(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_alloc_memory(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_free_memory(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_handle_io(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_handle_as_server(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_handle_as_client(PSI_NAIVE_HASHING_CTX* ctx);
-    static void psi_naive_hashing_write_to_file(PSI_NAIVE_HASHING_CTX* ctx, int read);
-    static void psi_naive_hashing_send(PSI_NAIVE_HASHING_CTX* ctx, int n, int * sock);
-    static void psi_naive_hashing_hash_elems(PSI_NAIVE_HASHING_CTX* ctx, int n);
-    static void psi_naive_hashing_hash_server_elems(PSI_NAIVE_HASHING_CTX* ctx);
 
 #ifdef __cplusplus
 }

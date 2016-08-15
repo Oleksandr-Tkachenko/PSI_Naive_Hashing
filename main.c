@@ -29,10 +29,14 @@ void self_check(PSI_NAIVE_HASHING_CTX* ctx);
 void parse_ip(uint32_t * ip, char * s);
 
 int main(int argc, char** argv) {
+    if (argc == 1) {
+        printf("PSI Naive Hashing\n");
+        return (EXIT_FAILURE);
+    }
     PSI_NAIVE_HASHING_CTX ctx[1];
     parse_argv(argc, argv, ctx);
     self_check(ctx);
-    ctx->hash_size = SHA256_DIGEST_LENGTH/2;
+    ctx->hash_size = SHA256_DIGEST_LENGTH / 2;
     ctx->write_buffer_size = ctx->read_buffer_size;
     psi_naive_hashing_run(ctx);
     return (EXIT_SUCCESS);
@@ -109,9 +113,11 @@ int parse_argv(int argc, char** argv, PSI_NAIVE_HASHING_CTX* ctx) {
         }
     for (index = optind; index < argc; index++)
         printf("Non-option argument %s\n", argv[index]);
+
+    if (ctx->role == SERVER)
+        ctx->read_buffer_size++;
         
-        if(ctx->role == SERVER)
-            ctx->read_buffer_size++;
+        return EXIT_SUCCESS;
 }
 
 void self_check(PSI_NAIVE_HASHING_CTX * ctx) {
