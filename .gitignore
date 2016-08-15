@@ -1,5 +1,5 @@
-nbproject
-.git
-.dep.inc
 *.o
+.git*
+.dep.inc
+nbproject/*
 psi-naive-hashing
