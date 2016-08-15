@@ -1,5 +1,0 @@
-*.o
-.git*
-.dep.inc
-nbproject/*
-psi-naive-hashing
