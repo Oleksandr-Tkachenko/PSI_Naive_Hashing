@@ -7,7 +7,7 @@ __Clean:__ sudo make clean
 
 __Remove:__ sudo make remove
 
-__Dependencies:__ libglib2.0-dev, _psi-utils_, libssl-dev
+__Dependencies:__ libglib2.0-dev, _lpsi-util_, libssl-dev
 
 __Usage:__ 
 
