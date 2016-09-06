@@ -1,6 +1,6 @@
-##PSI##
+# Private Set Intersection (PSI)
 ###Cuckoo Hashing###
-
+---
 __Install:__ 
 ```
 sudo make install
@@ -16,10 +16,14 @@ __Remove:__
 sudo make remove
 ```
 
-__Dependencies:__ libglib2.0-dev, _lpsi-util_, libssl-dev
+###Dependencies:
+---
+ * libglib2.0-dev
+ * lpsi-util
+ * libssl-dev
 
-__Usage:__ 
-
+###Usage:
+---
 ####Server####
 ```
 psi-naive-hashing  --server -s path to own dataset -d Path to result a -b path to result b  -r read buffer size -e element size -t threads -p port -i client ip
